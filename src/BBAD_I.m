@@ -274,8 +274,8 @@ function si = get_si( Y )
 if z > 1
   Y = rgb2gray(Y);
 end
-Y = double(Y);
-[mag, ~] = imgradient(Y);
+% Cast to uint8 for compatibility with octave
+[mag, ~] = imgradient(uint8(Y));
 si = std2(mag);
 end
 % spatial information VTF
