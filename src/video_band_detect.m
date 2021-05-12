@@ -43,12 +43,7 @@ data_dir = 'data';
 result_dir = 'result_banding_detect';
 lib_dir = 'lib';
 % video parameters
-% if different framerates, should store in array [30,25,25,24..] and modify the
-% call of video_framerate in Main Body to video_framerate(i)~
-vid_framerate = 30;
-vid_width = 1280;
-vid_height = 720;
-% set frame sampling step. 15 means 1/15frames
+% set frame sampling step (15 means 1 out of every 15 frames)
 sampling_step = 15;
 % choose which metric to evaluate: 'BBAD', 'FCDR'
 eval_flags = { 'BBAD' };
@@ -72,6 +67,8 @@ test_seqs = test_seqs(3:end);
 
 % video level banding score
 banding_score_BBAD_V = zeros(1, length(test_seqs));
+json_BBAD_V = cell(1, length(test_seqs));
+
 % frame level banding score
 banding_score_BBAD_I_frames = cell(1, length(test_seqs));
 
@@ -155,4 +152,10 @@ for i = 1:length(test_seqs)
         im_prev_frame = im;
     end
     banding_score_BBAD_V(1,i) = mean(banding_score_BBAD_I_frames{1,i});
+    json_BBAD_V{1,i} = struct('input_file', name, 'BBAND', banding_score_BBAD_V(1,i));
 end
+s.all_scores = json_BBAD_V;
+fileID = fopen('bband_results.json', 'w');
+fprintf(fileID, jsonencode(s));
+fclose(fileID);
+
